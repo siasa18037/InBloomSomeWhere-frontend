@@ -1,0 +1,39 @@
+/* ตกแต่ง Product Card */
+.product-card {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.product-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+}
+
+
+.product-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.product-card:hover .product-img-wrapper img {
+  transform: scale(1.1);
+}
+
+/* ปรับแต่งปุ่มใน Card */
+.product-card .btn-outline-danger {
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.product-card .btn-outline-danger:hover {
+  background-color: #e63946;
+  color: white;
+  transform: scale(1.02);
+}
+
+/* หัวข้อหน้า Page */
+h2 span.text-danger {
+  color: #e63946 !important;
+}

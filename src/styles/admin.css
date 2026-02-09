@@ -1,0 +1,143 @@
+
+body{
+  padding-top: 72px;
+}
+
+.admin-logout-btn:hover {
+  background-color: #bd1d2a !important;
+  box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3);
+}
+
+.navbar-brand:hover {
+  opacity: 0.8;
+}
+
+/* เส้นแบ่งแนวตั้ง */
+.vr {
+  width: 1px;
+  height: 25px;
+  background-color: #dee2e6;
+}
+
+
+
+/* ตกแต่ง Stat Card */
+.stat-card {
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent !important;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  border-left: 4px solid #e63946 !important;
+}
+
+/* ตกแต่งตาราง */
+.custom-table thead th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6c757d;
+}
+
+.custom-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.custom-table tbody tr:hover {
+  background-color: #fffafa;
+}
+
+/* ปุ่มจัดการในตาราง */
+.btn-light {
+  background-color: #f8f9fa;
+  border: none;
+}
+
+.btn-light:hover {
+  background-color: #ffeef0;
+  color: #e63946;
+}
+
+/* Badge สถานะ */
+.badge {
+  font-size: 0.75rem;
+}
+
+.form-control, .form-select {
+  border: 1px solid #eee;
+  padding: 0.6rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #e63946;
+  box-shadow: 0 0 0 0.25rem rgba(230, 57, 70, 0.1);
+}
+
+.card {
+  transition: transform 0.2s ease;
+}
+
+/* ทำให้ปุ่มบันทึกดูเด่น */
+.btn-lg {
+  padding: 0.8rem 1.5rem;
+  font-weight: 600;
+}
+
+/* สไตล์เฉพาะสำหรับหน้าจอ Admin */
+.bg-light {
+  background-color: #f8f9fa !important;
+}
+
+/* Sticky สรุปยอด */
+@media (min-width: 992px) {
+  .sticky-top {
+    z-index: 10;
+  }
+}
+
+/* Animation หมุนตอนกด Refresh */
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ปรับแต่งตาราง Admin */
+.custom-table thead th {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  color: #6c757d;
+  border-bottom: none;
+}
+
+.custom-table tbody tr {
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.custom-table tbody tr:hover {
+  background-color: #fffafa !important;
+}
+
+/* Badge สถานะออเดอร์ */
+.badge {
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+/* ปุ่มจัดการในตาราง */
+.btn-light {
+  border: 1px solid #eee;
+  background-color: white;
+}
+
+.btn-light:hover {
+  background-color: #f8f9fa;
+}

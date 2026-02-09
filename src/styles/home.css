@@ -1,0 +1,115 @@
+.hero-section {
+  background: linear-gradient(
+    135deg,
+    #fff5f5 0%,
+    #fff 50%,
+    #fff5f5 100%
+  );
+  padding: 60px 0;
+  overflow: hidden;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.hero-title span {
+  color: #f26a6a;
+}
+
+.hero-desc {
+  margin-top: 20px;
+  max-width: 420px;
+  color: #777;
+  line-height: 1.6;
+}
+
+.hero-image {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.3rem;
+  }
+}
+.hero-section {
+  /* ใส่ชื่อไฟล์ภาพพื้นหลังที่คุณเซฟไว้ใน public */
+  background-image: url('/hero.jpg'); 
+  background-size: cover;
+  background-position: center right;
+  background-repeat: no-repeat;
+  width: 100%;
+  padding-top: 72px; /* เว้นระยะจาก Navbar fixed-top */
+}
+
+.btn-danger {
+  background-color: #e63946 !important;
+  border-color: #e63946 !important;
+  /* transition: property duration timing-function delay */
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+}
+
+.btn-danger:hover {
+  background-color: #d62828 !important;
+  box-shadow: 0 10px 20px rgba(230, 57, 70, 0.4) !important;
+  /* ใส่หน่วงเวลานิดๆ ก่อนที่จะเริ่มขยับตอน Hover เข้า */
+  transition-delay: 0.05s; 
+}
+
+.btn-outline-danger {
+  border-width: 2px;
+  color: #e63946;
+  border-color: #e63946;
+  background-color: transparent;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.btn-outline-danger:hover {
+  background-color: #e63946;
+  color: white !important;
+  box-shadow: 0 10px 20px rgba(230, 57, 70, 0.2);
+  transition-delay: 0.05s;
+}
+
+/* ส่วน Responsive คงเดิม */
+@media (max-width: 768px) {
+  .hero-section {
+    background-position: 25% center;
+    text-align: center;
+  }
+  .hero-desc {
+    margin: 0 auto;
+  }
+  .hero-section .d-flex {
+    justify-content: center !important;
+  }
+  .hero-title {
+    font-size: 2.5rem;
+  }
+}
+
+/* Footer Styling */
+.hover-red:hover {
+  color: #e63946 !important;
+  padding-left: 5px;
+  transition: all 0.3s ease;
+}
+
+.social-icon {
+  color: #555;
+  transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+  color: #e63946;
+  transform: translateY(-3px);
+}
+
+.fill-danger {
+  fill: #e63946;
+}
