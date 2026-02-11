@@ -128,6 +128,7 @@ export default function AdminOrderDetailPage() {
   ออเดอร์ของคุณหมายเลข
 #${order.orderId}
 
+ชื่อลูกค้า: ${order.customerName}
 📦 สินค้า: ${order.productName}
 📅 วันที่จัดส่ง: ${order.deliveryDate} ${order.deliveryTime || ""}
 💰 ยอดสุทธิ: ฿${Number(order.net).toLocaleString()}
@@ -137,6 +138,30 @@ ${orderPublicUrl}
 
 ขอบคุณที่ใช้บริการค่ะ 💐
   `.trim();
+
+
+  const customerConfirmMessage = `
+📌 รบกวนตรวจสอบรายละเอียดออเดอร์ก่อนคอนเฟิร์มนะคะ
+
+ชื่อลูกค้า: ${order.customerName}
+📦 สินค้า: ${order.productName}
+${order.customOption ? `🛠️ ปรับแต่งเพิ่มเติม: ${order.customOption}` : ""}
+
+📅 วันที่จัดส่ง: ${order.deliveryDate} ${order.deliveryTime || ""}
+🚚 วิธีรับ: ${order.receiveMethod}
+
+${order.address 
+  ? `🏠 ที่อยู่จัดส่ง: ${order.address}` 
+  : "🏠 นัดรับหน้าร้าน"}
+
+💰 ยอดสุทธิ: ฿${Number(order.net).toLocaleString()}
+
+`.trim();
+
+  const copyConfirmMessage = async () => {
+    await navigator.clipboard.writeText(customerConfirmMessage);
+    alert("คัดลอกข้อความคอนเฟิร์มเรียบร้อย");
+  };
 
   const copyMessage = async () => {
     await navigator.clipboard.writeText(customerMessage);
@@ -474,55 +499,86 @@ ${orderPublicUrl}
 
 
   {/* ===== QR & CUSTOMER MESSAGE ===== */}
-<div className="card border-0 shadow-sm rounded-4 mt-4">
-  <div className="card-body p-4">
-    <h6 className="fw-bold text-danger mb-3">
-      QR Code สำหรับลูกค้า
-    </h6>
+    <div className="card border-0 shadow-sm rounded-4 mt-4">
+      <div className="card-body p-4">
+        <h6 className="fw-bold text-danger mb-3">
+          QR Code สำหรับลูกค้า
+        </h6>
 
-    <div className="d-flex flex-column align-items-center gap-3 mb-4">
-      <QRCodeCanvas
-        value={orderPublicUrl}
-        size={160}
-        bgColor="#ffffff"
-        fgColor="#000000"
-        level="H"
-        includeMargin
-      />
-      <small className="text-muted text-center">
-        สแกนเพื่อตรวจสอบสถานะออเดอร์
-      </small>
+        <div className="d-flex flex-column align-items-center gap-3 mb-4">
+          <QRCodeCanvas
+            value={orderPublicUrl}
+            size={160}
+            bgColor="#ffffff"
+            fgColor="#000000"
+            level="H"
+            includeMargin
+          />
+          <small className="text-muted text-center">
+            สแกนเพื่อตรวจสอบสถานะออเดอร์
+          </small>
+        </div>
+
+        <hr />
+
+        <h6 className="fw-bold text-danger mb-2">
+          ข้อความส่งให้ลูกค้า
+        </h6>
+
+        <div className="p-3 bg-light rounded-4 mb-3">
+          <pre
+            className="mb-0 small"
+            style={{
+              whiteSpace: "pre-wrap",
+              fontFamily: "inherit"
+            }}
+          >
+            {customerMessage}
+          </pre>
+        </div>
+
+        <button
+          className="btn btn-outline-danger w-100 rounded-pill d-flex align-items-center justify-content-center gap-2"
+          onClick={copyMessage}
+        >
+          <Copy size={16} />
+          คัดลอกข้อความ
+        </button>
+
+        {order.status === "รอคอนเฟิร์ม" && (
+          <>
+            <hr />
+            <h6 className="fw-bold text-danger mb-2">
+              ข้อความคอนเฟิร์มก่อนทำออเดอร์
+            </h6>
+
+            <div className="p-3 bg-light rounded-4 mb-3">
+              <pre
+                className="mb-0 small"
+                style={{
+                  whiteSpace: "pre-wrap",
+                  fontFamily: "inherit"
+                }}
+              >
+                {customerConfirmMessage}
+              </pre>
+            </div>
+
+            {order.status === "รอคอนเฟิร์ม" && (
+              <button
+                className="btn btn-danger w-100 rounded-pill d-flex align-items-center justify-content-center gap-2 mt-2"
+                onClick={copyConfirmMessage}
+              >
+                <Copy size={16} />
+                คัดลอกข้อความคอนเฟิร์มก่อนทำออเดอร์
+              </button>
+            )}
+
+          </>
+        )}
+
+      </div>
     </div>
-
-    <hr />
-
-    <h6 className="fw-bold text-danger mb-2">
-      ข้อความส่งให้ลูกค้า
-    </h6>
-
-    <div className="p-3 bg-light rounded-4 mb-3">
-      <pre
-        className="mb-0 small"
-        style={{
-          whiteSpace: "pre-wrap",
-          fontFamily: "inherit"
-        }}
-      >
-        {customerMessage}
-      </pre>
-    </div>
-
-    <button
-      className="btn btn-outline-danger w-100 rounded-pill d-flex align-items-center justify-content-center gap-2"
-      onClick={copyMessage}
-    >
-      <Copy size={16} />
-      คัดลอกข้อความ
-    </button>
-  </div>
-</div>
-
-
       </div>
     </div>
   );

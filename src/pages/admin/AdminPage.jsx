@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { Link ,useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../state/AuthContext.jsx";
 import { apiGetAllOrders } from "../../api/client.js";
 import { fromSheetToForm } from "../../utils/orderMapper.js";
 import Loading from "../../components/Loading";
-
 
 import {
   ShoppingBag,
@@ -22,7 +21,6 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-
   useEffect(() => {
     load();
   }, []);
@@ -39,20 +37,28 @@ export default function AdminPage() {
   };
 
   /* ===============================
-     DERIVED DATA (Dashboard Logic)
+     FIX TIMEZONE (ใช้ local date)
      =============================== */
-
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toLocaleDateString("en-CA");
 
   const ordersToday = orders.filter(
     (o) => o.deliveryDate === today
   );
 
-  const needActionStatuses = ["รอคอนเฟิร์ม", "เตรียมสินค้า", "พร้อมส่ง"];
+  const needActionStatuses = [
+    "รอคอนเฟิร์ม",
+    "เตรียมสินค้า",
+    "พร้อมส่ง"
+  ];
 
-  const needActionOrders = orders.filter((o) =>
-    needActionStatuses.includes(o.status)
-  );
+  /* ===============================
+     SORT ตามวันจัดส่ง
+     =============================== */
+  const needActionOrders = orders
+    .filter((o) => needActionStatuses.includes(o.status))
+    .sort((a, b) =>
+      (a.deliveryDate || "").localeCompare(b.deliveryDate || "")
+    );
 
   const totalRevenue = orders.reduce(
     (sum, o) => sum + Number(o.net || 0),
@@ -63,6 +69,26 @@ export default function AdminPage() {
     (sum, o) => sum + Number(o.net || 0),
     0
   );
+
+  /* ===============================
+     STATUS COLOR MAP
+     =============================== */
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "รอคอนเฟิร์ม":
+        return "bg-secondary text-white";
+      case "เตรียมสินค้า":
+        return "bg-info text-white";
+      case "พร้อมส่ง":
+        return "bg-primary text-white";
+      case "กำลังจัดส่ง":
+        return "bg-warning text-dark";
+      case "ส่งแล้ว":
+        return "bg-success text-white";
+      default:
+        return "bg-light text-dark";
+    }
+  };
 
   /* ===============================
      STATS
@@ -97,7 +123,6 @@ export default function AdminPage() {
   if (loading) {
     return <Loading text="กำลังโหลดแดชบอร์ดร้าน..." />;
   }
-
 
   return (
     <div className="admin-page-content py-4">
@@ -163,19 +188,20 @@ export default function AdminPage() {
               <thead className="table-light">
                 <tr>
                   <th>ID</th>
-                  <th style={{minWidth:'150px'}}>ลูกค้า</th>
-                  <th style={{minWidth:'200px'}}>สินค้า</th>
+                  <th style={{ minWidth: "150px" }}>ลูกค้า</th>
+                  <th style={{ minWidth: "200px" }}>สินค้า</th>
                   <th>สถานะ</th>
                   <th className="text-end">ยอดสุทธิ</th>
                 </tr>
               </thead>
               <tbody>
-                {needActionOrders.slice(0, 5).map((o) => (
-                 <tr
+                {needActionOrders.map((o) => (
+                  <tr
                     key={o.orderId}
-                    onClick={() => navigate(`/admin/order/${o.orderId}`)}
+                    onClick={() =>
+                      navigate(`/admin/order/${o.orderId}`)
+                    }
                     style={{ cursor: "pointer" }}
-                    className="hover-row"
                   >
                     <td className="fw-bold text-muted">
                       #{o.orderId}
@@ -188,7 +214,11 @@ export default function AdminPage() {
                     </td>
 
                     <td>
-                      <span className="badge bg-warning bg-opacity-10 text-dark rounded-pill px-3 py-2">
+                      <span
+                        className={`badge rounded-pill px-3 py-2 ${getStatusColor(
+                          o.status
+                        )}`}
+                      >
                         {o.status}
                       </span>
                     </td>
@@ -197,12 +227,14 @@ export default function AdminPage() {
                       ฿{Number(o.net).toLocaleString()}
                     </td>
                   </tr>
-
                 ))}
 
                 {needActionOrders.length === 0 && (
                   <tr>
-                    <td colSpan="5" className="text-center text-muted py-4">
+                    <td
+                      colSpan="5"
+                      className="text-center text-muted py-4"
+                    >
                       🎉 ไม่มีออเดอร์ที่ต้องจัดการตอนนี้
                     </td>
                   </tr>

@@ -15,6 +15,10 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+const [productFilter, setProductFilter] = useState("ทั้งหมด");
+const [sortOrder, setSortOrder] = useState("newest");
+
   
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ทั้งหมด");
@@ -36,26 +40,48 @@ export default function AdminOrdersPage() {
     }
   };
 
+  const uniqueProducts = [
+    "ทั้งหมด",
+    ...Array.from(new Set(orders.map(o => o.productName).filter(Boolean)))
+  ];
+
   useEffect(() => { load(); }, []);
 
   // ===== FILTER =====
-  const filteredOrders = orders.filter(o => {
-    const id = String(o.orderId || "").toLowerCase();
-    const name = String(o.customerName || "").toLowerCase();
-    const phone = String(o.phone || "");
-    const search = searchTerm.toLowerCase();
+  const filteredOrders = orders
+    .filter(o => {
+      const id = String(o.orderId || "").toLowerCase();
+      const name = String(o.customerName || "").toLowerCase();
+      const phone = String(o.phone || "");
+      const search = searchTerm.toLowerCase();
 
-    const matchesSearch =
-      id.includes(search) ||
-      name.includes(search) ||
-      phone.includes(search);
+      const matchesSearch =
+        id.includes(search) ||
+        name.includes(search) ||
+        phone.includes(search);
 
-    const matchesStatus =
-      statusFilter === "ทั้งหมด" ||
-      o.status === statusFilter;
-    
-    return matchesSearch && matchesStatus;
-  }).reverse();
+      const matchesStatus =
+        statusFilter === "ทั้งหมด" ||
+        o.status === statusFilter;
+
+      const matchesDate =
+        !dateFilter ||
+        o.deliveryDate === dateFilter;
+
+      const matchesProduct =
+        productFilter === "ทั้งหมด" ||
+        o.productName === productFilter;
+
+      return matchesSearch && matchesStatus && matchesDate && matchesProduct;
+    })
+    .sort((a, b) => {
+      if (sortOrder === "newest") {
+        return new Date(b.orderDate) - new Date(a.orderDate);
+      } else {
+        return new Date(a.orderDate) - new Date(b.orderDate);
+      }
+    });
+
 
   const getStatusBadge = (status) => {
     const badges = {
@@ -101,7 +127,9 @@ export default function AdminOrdersPage() {
       <div className="card border-0 shadow-sm rounded-4 mb-4">
         <div className="card-body p-3">
           <div className="row g-3">
-            <div className="col-md-8">
+
+            {/* SEARCH */}
+            <div className="col-md-4">
               <div className="input-group">
                 <span className="input-group-text bg-white border-end-0 rounded-start-pill text-muted">
                   <Search size={18} />
@@ -109,13 +137,15 @@ export default function AdminOrdersPage() {
                 <input 
                   type="text"
                   className="form-control border-start-0 rounded-end-pill" 
-                  placeholder="ค้นหา Order ID, ชื่อลูกค้า, เบอร์โทร..."
+                  placeholder="ค้นหา ID / ชื่อลูกค้า / เบอร์..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
             </div>
-            <div className="col-md-4">
+
+            {/* STATUS */}
+            <div className="col-md-2">
               <select
                 className="form-select rounded-pill fw-bold"
                 value={statusFilter}
@@ -125,13 +155,51 @@ export default function AdminOrdersPage() {
                 <option value="รอคอนเฟิร์ม">รอคอนเฟิร์ม</option>
                 <option value="เตรียมสินค้า">เตรียมสินค้า</option>
                 <option value="พร้อมส่ง">พร้อมส่ง</option>
+                <option value="กำลังจัดส่ง">กำลังจัดส่ง</option>
                 <option value="ส่งแล้ว">ส่งแล้ว</option>
                 <option value="ยกเลิก">ยกเลิก</option>
               </select>
             </div>
+
+            {/* DATE */}
+            <div className="col-md-2">
+              <input
+                type="date"
+                className="form-control rounded-pill"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+              />
+            </div>
+
+            {/* PRODUCT */}
+            <div className="col-md-2">
+              <select
+                className="form-select rounded-pill"
+                value={productFilter}
+                onChange={(e) => setProductFilter(e.target.value)}
+              >
+                {uniqueProducts.map((p, i) => (
+                  <option key={i} value={p}>{p}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* SORT */}
+            <div className="col-md-2">
+              <select
+                className="form-select rounded-pill"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+              >
+                <option value="newest">ใหม่ล่าสุด</option>
+                <option value="oldest">เก่าสุด</option>
+              </select>
+            </div>
+
           </div>
         </div>
       </div>
+
 
       {/* TABLE */}
       <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
