@@ -13,6 +13,7 @@ import AdminCreateOrderPage from "./pages/admin/AdminCreateOrderPage.jsx";
 import AdminEditOrderPage from "./pages/admin/AdminEditOrderPage.jsx";
 import AdminOrderDetailPage from "./pages/admin/AdminOrderDetailPage.jsx";
 import AdminPage from "./pages/admin/AdminPage.jsx";
+import AdminPrintPage from "./pages/admin/AdminPrintPage.jsx";
 
 
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
@@ -43,8 +44,9 @@ export default function App() {
         <Route path="/admin/create" element={<AdminCreateOrderPage />} />
         <Route path="/admin/order/:id" element={<AdminOrderDetailPage />} />
         <Route path="/admin/edit/:id" element={<AdminEditOrderPage />} />
+        
       </Route>
-
+        <Route path="/admin/print" element={<AdminPrintPage />} />
     </Routes>
   );
 }

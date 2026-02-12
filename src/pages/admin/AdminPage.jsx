@@ -39,11 +39,20 @@ export default function AdminPage() {
   /* ===============================
      FIX TIMEZONE (ใช้ local date)
      =============================== */
-  const today = new Date().toLocaleDateString("en-CA");
+    const today = new Date().toLocaleDateString("en-CA");
 
-  const ordersToday = orders.filter(
-    (o) => o.deliveryDate === today
-  );
+    // 1️⃣ ออเดอร์ที่สั่งวันนี้ (ยอดขายวันนี้)
+    const ordersToday = orders.filter((o) => {
+      const localDate = new Date(o.orderDate).toLocaleDateString("en-CA");
+      return localDate === today;
+    });
+
+    // 2️⃣ ออเดอร์ที่ต้องจัดส่งวันนี้
+    const deliveryToday = orders.filter(
+      (o) => o.deliveryDate === today
+    );
+
+
 
   const needActionStatuses = [
     "รอคอนเฟิร์ม",
@@ -108,7 +117,7 @@ export default function AdminPage() {
     },
     {
       title: "วันนี้ต้องจัดส่ง",
-      value: ordersToday.length,
+      value: deliveryToday.length,
       icon: <Truck size={22} />,
       color: "bg-warning"
     },
@@ -129,22 +138,52 @@ export default function AdminPage() {
       <div className="container">
 
         {/* ===== Header ===== */}
-        <div className="d-flex justify-content-between align-items-center mb-4">
+        {/* ===== Header ===== */}
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+
+          {/* Left */}
           <div>
             <h2 className="fw-bold mb-1">แดชบอร์ดจัดการร้าน</h2>
-            <p className="text-muted small">
+            <p className="text-muted small mb-0">
               วันนี้มีออเดอร์ที่ต้องจัดการ {needActionOrders.length} รายการ
             </p>
           </div>
 
-          <Link
-            to="/admin/create"
-            className="btn btn-danger rounded-pill px-4 d-flex align-items-center gap-2 shadow-sm"
-          >
-            <PlusCircle size={18} />
-            สร้างออเดอร์ใหม่
-          </Link>
+          {/* Right Buttons */}
+          <div className="d-flex flex-wrap gap-2">
+
+            <button
+              className="btn btn-outline-secondary rounded-pill px-4 shadow-sm"
+              onClick={() => {
+        navigator.clipboard.writeText(
+`รบกวนขอข้อมูลเพิ่มเติมดังนี้นะคะ 😊
+
+1. ชื่อผู้ติดต่อ
+2. สถานที่จัดส่ง พร้อมระบุวันที่และเวลาที่สะดวก
+   • จัดส่งฟรีในเขตซอยฉลองกรุง 1 ลาดกระบัง 
+   • หรือนัดรับที่คาเฟ่ใสใส ฟรีค่ะ
+   • หากอยู่นอกเขต ทางร้านสามารถจัดส่งให้ได้ โดยลูกค้ารับผิดชอบค่าส่งปลายทางนะคะ
+3. เบอร์โทรศัพท์สำหรับติดต่อ
+
+ขอบคุณมากค่ะ 💐`
+        );
+                alert("คัดลอกข้อความเรียบร้อย");
+              }}
+            >
+              คัดลอกคำขอข้อมูลลูกค้า
+            </button>
+
+            <Link
+              to="/admin/create"
+              className="btn btn-danger rounded-pill px-4 d-flex align-items-center gap-2 shadow-sm"
+            >
+              <PlusCircle size={18} />
+              สร้างออเดอร์ใหม่
+            </Link>
+
+          </div>
         </div>
+
 
         {/* ===== STATS ===== */}
         <div className="row g-4 mb-5">

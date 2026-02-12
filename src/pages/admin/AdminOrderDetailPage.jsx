@@ -120,18 +120,20 @@ export default function AdminOrderDetailPage() {
     );
   }
 
+  console.log(products)
+
   if (!order) return null;
 
   const orderPublicUrl = `${window.location.origin}/order/${order.orderId}`;
 
   const customerMessage = `
-  ออเดอร์ของคุณหมายเลข
+📌 ออเดอร์ของคุณหมายเลข
 #${order.orderId}
 
 ชื่อลูกค้า: ${order.customerName}
-📦 สินค้า: ${order.productName}
-📅 วันที่จัดส่ง: ${order.deliveryDate} ${order.deliveryTime || ""}
-💰 ยอดสุทธิ: ฿${Number(order.net).toLocaleString()}
+สินค้า: ${order.productName}
+วันที่จัดส่ง: ${order.deliveryDate} ${order.deliveryTime || ""}
+ยอดสุทธิ: ฿${Number(order.net).toLocaleString()}
 
 สามารถตรวจสอบสถานะออเดอร์ได้ที่:
 ${orderPublicUrl}
@@ -141,20 +143,21 @@ ${orderPublicUrl}
 
 
   const customerConfirmMessage = `
-📌 รบกวนตรวจสอบรายละเอียดออเดอร์ก่อนคอนเฟิร์มนะคะ
+📌 รบกวนตรวจสอบรายละเอียดออเดอร์ก่อนชำระเงินนะคะ
 
 ชื่อลูกค้า: ${order.customerName}
-📦 สินค้า: ${order.productName}
-${order.customOption ? `🛠️ ปรับแต่งเพิ่มเติม: ${order.customOption}` : ""}
+เบอร์โทร: ${order.phone || "-"}
+สินค้า: ${order.productName}
+${order.customOption ? `ปรับแต่งเพิ่มเติม: ${order.customOption}` : ""}
 
-📅 วันที่จัดส่ง: ${order.deliveryDate} ${order.deliveryTime || ""}
-🚚 วิธีรับ: ${order.receiveMethod}
+วันที่จัดส่ง: ${order.deliveryDate} ${order.deliveryTime || ""}
+วิธีรับ: ${order.receiveMethod}
 
 ${order.address 
-  ? `🏠 ที่อยู่จัดส่ง: ${order.address}` 
-  : "🏠 นัดรับหน้าร้าน"}
+  ? `ที่อยู่จัดส่ง: ${order.address}` 
+  : "นัดรับหน้าร้าน"}
 
-💰 ยอดสุทธิ: ฿${Number(order.net).toLocaleString()}
+ยอดสุทธิ: ฿${Number(order.net).toLocaleString()}
 
 `.trim();
 

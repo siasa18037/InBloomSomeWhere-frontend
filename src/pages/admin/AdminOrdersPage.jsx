@@ -16,21 +16,21 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [dateFilter, setDateFilter] = useState("");
-const [productFilter, setProductFilter] = useState("ทั้งหมด");
-const [sortOrder, setSortOrder] = useState("newest");
+  const [productFilter, setProductFilter] = useState("ทั้งหมด");
+  const [sortOrder, setSortOrder] = useState("newest");
+  const [selectedOrders, setSelectedOrders] = useState([]);
 
-  
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ทั้งหมด");
+
+  // ✅ เพิ่ม filter ประเภทการรับสินค้า
+  const [receiveFilter, setReceiveFilter] = useState("ทั้งหมด");
 
   const load = async () => {
     setLoading(true);
     try {
       const r = await apiGetAllOrders(token);
-
-      // ✅ MAP ที่นี่ครั้งเดียว
       const mapped = (r.data || []).map(fromSheetToForm);
-
       setOrders(mapped);
       setErr("");
     } catch (e) {
@@ -39,6 +39,18 @@ const [sortOrder, setSortOrder] = useState("newest");
       setLoading(false);
     }
   };
+
+  const toggleSelect = (orderId) => {
+    setSelectedOrders(prev =>
+      prev.includes(orderId)
+        ? prev.filter(id => id !== orderId)
+        : [...prev, orderId]
+    );
+  };
+
+  useEffect(() => {
+    setSelectedOrders([]);
+  }, [searchTerm, statusFilter, dateFilter, productFilter, sortOrder, receiveFilter]);
 
   const uniqueProducts = [
     "ทั้งหมด",
@@ -72,7 +84,16 @@ const [sortOrder, setSortOrder] = useState("newest");
         productFilter === "ทั้งหมด" ||
         o.productName === productFilter;
 
-      return matchesSearch && matchesStatus && matchesDate && matchesProduct;
+      // ✅ receive filter
+      const matchesReceive =
+        receiveFilter === "ทั้งหมด" ||
+        o.receiveMethod === receiveFilter;
+
+      return matchesSearch && 
+             matchesStatus && 
+             matchesDate && 
+             matchesProduct &&
+             matchesReceive;
     })
     .sort((a, b) => {
       if (sortOrder === "newest") {
@@ -81,7 +102,6 @@ const [sortOrder, setSortOrder] = useState("newest");
         return new Date(a.orderDate) - new Date(b.orderDate);
       }
     });
-
 
   const getStatusBadge = (status) => {
     const badges = {
@@ -114,6 +134,18 @@ const [sortOrder, setSortOrder] = useState("newest");
           >
             <RefreshCw size={18} className={loading ? "spinner" : ""} /> รีเฟรช
           </button>
+
+          {selectedOrders.length > 0 && (
+            <button
+              className="btn btn-dark rounded-pill px-4"
+              onClick={() =>
+                window.location.href = `/admin/print?ids=${selectedOrders.join(",")}`
+              }
+            >
+              พิมพ์ {selectedOrders.length} รายการ
+            </button>
+          )}
+
           <Link
             to="/admin/create"
             className="btn btn-danger rounded-pill px-4 d-flex align-items-center gap-2 shadow-sm"
@@ -123,35 +155,33 @@ const [sortOrder, setSortOrder] = useState("newest");
         </div>
       </div>
 
-      {/* Search & Filter */}
+      {/* ===== Compact Filter ===== */}
       <div className="card border-0 shadow-sm rounded-4 mb-4">
-        <div className="card-body p-3">
-          <div className="row g-3">
+        <div className="card-body py-3 px-3">
+          <div className="row g-2">
 
-            {/* SEARCH */}
-            <div className="col-md-4">
-              <div className="input-group">
+            <div className="col-12 col-md-3">
+              <div className="input-group input-group-sm">
                 <span className="input-group-text bg-white border-end-0 rounded-start-pill text-muted">
-                  <Search size={18} />
+                  <Search size={14} />
                 </span>
                 <input 
                   type="text"
                   className="form-control border-start-0 rounded-end-pill" 
-                  placeholder="ค้นหา ID / ชื่อลูกค้า / เบอร์..."
+                  placeholder="ค้นหา..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
             </div>
 
-            {/* STATUS */}
-            <div className="col-md-2">
+            <div className="col-6 col-md-2">
               <select
-                className="form-select rounded-pill fw-bold"
+                className="form-select form-select-sm rounded-pill"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
-                <option value="ทั้งหมด">ทุกสถานะ</option>
+                <option value="ทั้งหมด">สถานะทั้งหมด</option>
                 <option value="รอคอนเฟิร์ม">รอคอนเฟิร์ม</option>
                 <option value="เตรียมสินค้า">เตรียมสินค้า</option>
                 <option value="พร้อมส่ง">พร้อมส่ง</option>
@@ -161,20 +191,31 @@ const [sortOrder, setSortOrder] = useState("newest");
               </select>
             </div>
 
-            {/* DATE */}
-            <div className="col-md-2">
+            <div className="col-6 col-md-2">
+              <select
+                className="form-select form-select-sm rounded-pill"
+                value={receiveFilter}
+                onChange={(e) => setReceiveFilter(e.target.value)}
+              >
+                <option value="ทั้งหมด">การรับทั้งหมด</option>
+                <option value="นัดรับ">นัดรับ</option>
+                <option value="จัดส่งเอง">จัดส่งเอง</option>
+                <option value="จัดส่งผ่านแมส">จัดส่งผ่านแมส</option>
+              </select>
+            </div>
+
+            <div className="col-6 col-md-2">
               <input
                 type="date"
-                className="form-control rounded-pill"
+                className="form-control form-control-sm rounded-pill"
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value)}
               />
             </div>
 
-            {/* PRODUCT */}
-            <div className="col-md-2">
+            <div className="col-6 col-md-2">
               <select
-                className="form-select rounded-pill"
+                className="form-select form-select-sm rounded-pill"
                 value={productFilter}
                 onChange={(e) => setProductFilter(e.target.value)}
               >
@@ -184,15 +225,14 @@ const [sortOrder, setSortOrder] = useState("newest");
               </select>
             </div>
 
-            {/* SORT */}
-            <div className="col-md-2">
+            <div className="col-6 col-md-1">
               <select
-                className="form-select rounded-pill"
+                className="form-select form-select-sm rounded-pill"
                 value={sortOrder}
                 onChange={(e) => setSortOrder(e.target.value)}
               >
-                <option value="newest">ใหม่ล่าสุด</option>
-                <option value="oldest">เก่าสุด</option>
+                <option value="newest">ใหม่</option>
+                <option value="oldest">เก่า</option>
               </select>
             </div>
 
@@ -200,13 +240,28 @@ const [sortOrder, setSortOrder] = useState("newest");
         </div>
       </div>
 
-
-      {/* TABLE */}
+      {/* ===== TABLE (ไม่แก้) ===== */}
       <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div className="table-responsive">
           <table className="table table-hover align-middle mb-0">
             <thead className="table-light">
               <tr>
+                <th className="px-3 text-center align-middle">
+                  <input
+                    type="checkbox"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedOrders(filteredOrders.map(o => o.orderId));
+                      } else {
+                        setSelectedOrders([]);
+                      }
+                    }}
+                    checked={
+                      filteredOrders.length > 0 &&
+                      filteredOrders.every(o => selectedOrders.includes(o.orderId))
+                    }
+                  />
+                </th>
                 <th className="px-4 py-3">Order ID / ลูกค้า</th>
                 <th className="py-3">สินค้า</th>
                 <th className="py-3">วันที่ส่ง</th>
@@ -218,6 +273,14 @@ const [sortOrder, setSortOrder] = useState("newest");
             <tbody>
               {filteredOrders.map(o => (
                 <tr key={o.orderId}>
+                  <td className="px-3 text-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedOrders.includes(o.orderId)}
+                      onChange={() => toggleSelect(o.orderId)}
+                      className="form-check-input"
+                    />
+                  </td>
                   <td className="px-4 py-3">
                     <div className="fw-bold text-dark">
                       #{o.orderId?.slice(-8)}
@@ -256,16 +319,10 @@ const [sortOrder, setSortOrder] = useState("newest");
                   </td>
 
                   <td className="px-4 text-center">
-                    <Link
-                      to={`/admin/order/${o.orderId}`}
-                      className="btn btn-sm p-2"
-                    >
+                    <Link to={`/admin/order/${o.orderId}`} className="btn btn-sm p-2">
                       <Eye size={16} className="text-info" />
                     </Link>
-                    <Link
-                      to={`/admin/edit/${o.orderId}`}
-                      className="btn btn-sm p-2"
-                    >
+                    <Link to={`/admin/edit/${o.orderId}`} className="btn btn-sm p-2">
                       <Edit size={16} className="text-warning" />
                     </Link>
                   </td>
